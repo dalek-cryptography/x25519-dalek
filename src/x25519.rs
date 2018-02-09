@@ -35,7 +35,7 @@ fn decode_scalar(scalar: &[u8; 32]) -> Scalar {
     s[31] &= 127;
     s[31] |= 64;
 
-    Scalar(s)
+    Scalar::from_bits(s)
 }
 
 /// Generate an x25519 secret key.
@@ -62,7 +62,9 @@ pub fn x25519(scalar: &Scalar, point: &CompressedMontgomeryU) -> CompressedMontg
 /// Utility function to make it easier to call `x25519()` with byte arrays as
 /// inputs and outputs.
 pub fn diffie_hellman(my_secret: &[u8; 32], their_public: &[u8; 32]) -> [u8; 32] {
-    x25519(&Scalar(*my_secret), &CompressedMontgomeryU(*their_public)).to_bytes()
+    x25519(
+        &Scalar::from_bits(*my_secret),
+        &CompressedMontgomeryU(*their_public)).to_bytes()
 }
 
 
@@ -75,13 +77,13 @@ mod test {
                                input_point: &CompressedMontgomeryU,
                                expected: &[u8; 32]) {
         let result = x25519(&input_scalar, &input_point);
-        
+
         assert_eq!(result.0, *expected);
     }
 
     #[test]
     fn rfc7748_ladder_test1_vectorset1() {
-        let input_scalar: Scalar = Scalar([
+        let input_scalar: Scalar = Scalar::from_bits([
             0xa5, 0x46, 0xe3, 0x6b, 0xf0, 0x52, 0x7c, 0x9d,
             0x3b, 0x16, 0x15, 0x4b, 0x82, 0x46, 0x5e, 0xdd,
             0x62, 0x14, 0x4c, 0x0a, 0xc1, 0xfc, 0x5a, 0x18,
@@ -102,7 +104,7 @@ mod test {
 
     #[test]
     fn rfc7748_ladder_test1_vectorset2() {
-        let input_scalar: Scalar = Scalar([
+        let input_scalar: Scalar = Scalar::from_bits([
             0x4b, 0x66, 0xe9, 0xd4, 0xd1, 0xb4, 0x67, 0x3c,
             0x5a, 0xd2, 0x26, 0x91, 0x95, 0x7d, 0x6a, 0xf5,
             0xc1, 0x1b, 0x64, 0x21, 0xe0, 0xea, 0x01, 0xd4,
@@ -124,7 +126,7 @@ mod test {
     #[test]
     #[ignore] // Run only if you want to burn a lot of CPU doing 1,000,000 DH operations
     fn rfc7748_ladder_test2() {
-        let mut k: Scalar = Scalar(BASE_COMPRESSED_MONTGOMERY.0);
+        let mut k: Scalar = Scalar::from_bits(BASE_COMPRESSED_MONTGOMERY.0);
         let mut u: CompressedMontgomeryU = BASE_COMPRESSED_MONTGOMERY;
         let mut result: CompressedMontgomeryU;
 
@@ -141,7 +143,7 @@ mod test {
                     //
                     //                ↓↓ DON'T DO THIS ↓↓
                     u = CompressedMontgomeryU(k.as_bytes().clone());
-                    k = Scalar(result.to_bytes());
+                    k = Scalar::from_bits(result.to_bytes());
                 }
             )
         }
@@ -152,7 +154,7 @@ mod test {
         //     684cf59ba83309552800ef566f2f4d3c1c3887c49360e3875f2eb94d99532c51
         // After 1,000,000 iterations:
         //     7c3911e0ab2586fd864497297e575e6f3bc601c0883c30df5f4dd2d24f665424
-            
+
         do_iterations!(1);
         assert_eq!(k.as_bytes(), &[ 0x42, 0x2c, 0x8e, 0x7a, 0x62, 0x27, 0xd7, 0xbc,
                                     0xa1, 0x35, 0x0b, 0x3e, 0x2b, 0xb7, 0x27, 0x9f,
