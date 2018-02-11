@@ -19,7 +19,7 @@ exclude = [
 travis-ci = { repository = "dalek-cryptography/x25519-dalek", branch = "master"}
 
 [dependencies.curve25519-dalek]
-version = "0.14"
+version = "0.15"
 
 [dependencies.rand]
 optional = true
