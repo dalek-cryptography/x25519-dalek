@@ -127,6 +127,8 @@
 #![deny(missing_docs)]
 
 extern crate curve25519_dalek;
+//myedit
+extern crate clear_on_drop;
 
 extern crate rand_core;
 

@@ -19,6 +19,16 @@ use curve25519_dalek::scalar::Scalar;
 use rand_core::RngCore;
 use rand_core::CryptoRng;
 
+use clear_on_drop::clear::Clear;
+
+
+pub const SK_LENGTH: usize = 32;
+pub const PK_LENGTH: usize = 32;
+
+pub struct SecretKey(pub (crate) [u8; SK_LENGTH]);
+pub struct PublicKey(pub (crate) [u8; PK_LENGTH])
+
+
 /// "Decode" a scalar from a 32-byte array.
 ///
 /// By "decode" here, what is really meant is applying key clamping by twiddling
@@ -37,19 +47,26 @@ fn decode_scalar(scalar: &[u8; 32]) -> Scalar {
     Scalar::from_bits(s)
 }
 
-/// Generate an x25519 secret key.
-pub fn generate_secret<T>(csprng: &mut T) -> [u8; 32]
-    where T: RngCore + CryptoRng
-{
-    let mut bytes = [0u8; 32];
-    csprng.fill_bytes(&mut bytes);
-    bytes
+impl SecretKey {
+    pub fn generate<T>(csprng: &mut T) -> SecretKey
+    where T: RngCore + CryptoRng,
+    {
+        let mut bytes: SecretKey = SecretKey([u8; 32]);
+        csprng.fill_bytes(&mut bytes.0);
+        bytes
+    }
+}
+impl Drop for SecretKey {
+     pub fn drop(&mut self) {
+        self.0.clear();
+    }
+
+impl PublicKey{
+    pub fn generate(secret: &[u8; 32] -> MontgomeryPoint{
+         (&decode_scalar(secret) * &ED25519_BASEPOINT_TABLE).to_montgomery()
+    })
 }
 
-/// Given an x25519 secret key, compute its corresponding public key.
-pub fn generate_public(secret: &[u8; 32]) -> MontgomeryPoint {
-    (&decode_scalar(secret) * &ED25519_BASEPOINT_TABLE).to_montgomery()
-}
 
 /// The x25519 function, as specified in RFC7748.
 pub fn x25519(scalar: &Scalar, point: &MontgomeryPoint) -> MontgomeryPoint {
