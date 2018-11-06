@@ -26,7 +26,7 @@ pub const SK_LENGTH: usize = 32;
 pub const PK_LENGTH: usize = 32;
 
 pub struct SecretKey(pub (crate) [u8; SK_LENGTH]);
-pub struct PublicKey(pub (crate) [u8; PK_LENGTH])
+pub struct PublicKey(pub (crate) [u8; PK_LENGTH]);
 
 
 /// "Decode" a scalar from a 32-byte array.
@@ -61,8 +61,8 @@ impl Drop for SecretKey {
         self.0.clear();
     }
 
-impl PublicKey{
-    pub fn generate(secret: &[u8; 32] -> MontgomeryPoint{
+impl PublicKey {
+    pub fn generate(secret: &[u8; 32]) -> MontgomeryPoint{
          (&decode_scalar(secret) * &ED25519_BASEPOINT_TABLE).to_montgomery()
     })
 }
