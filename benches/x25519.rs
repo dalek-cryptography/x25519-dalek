@@ -18,15 +18,15 @@ use criterion::Criterion;
 
 use rand::OsRng;
 
-use x25519_dalek::generate_public;
-use x25519_dalek::generate_secret;
+use x25519_dalek::SecretKey;
+use x25519_dalek::PublicKey;
 use x25519_dalek::diffie_hellman;
 
 fn bench_diffie_hellman(c: &mut Criterion) {
     let mut csprng: OsRng = OsRng::new().unwrap();
-    let alice_secret: [u8; 32] = generate_secret(&mut csprng);
-    let bob_secret: [u8; 32] = generate_secret(&mut csprng);
-    let bob_public: [u8; 32] = generate_public(&bob_secret).to_bytes();
+    let alice_secret: SecretKey = SecretKey::generate(&mut csprng);
+    let bob_secret: SecretKey = SecretKey::generate(&mut csprng);
+    let bob_public: PublicKey = PublicKey::generate(&bob_secret).to_bytes();
 
     c.bench_function("diffie_hellman", move |b| {
         b.iter(||
