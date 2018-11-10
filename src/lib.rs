@@ -40,13 +40,13 @@
 //! extern crate rand;
 //!
 //! # fn main() {
-//! use x25519_dalek::generate_secret;
-//! use x25519_dalek::generate_public;
+//! use x25519_dalek::SecretKey;
+//! use x25519_dalek::PublicKey;
 //! use rand::thread_rng;
 //!
 //! let mut alice_csprng = thread_rng();
-//! let     alice_secret = generate_secret(&mut alice_csprng);
-//! let     alice_public = generate_public(&alice_secret);
+//! let     alice_secret = SecretKey::generate(&mut alice_csprng);
+//! let     alice_public = PublicKey::generate(&alice_secret);
 //! # }
 //! ```
 //!
@@ -57,13 +57,13 @@
 //! # extern crate rand;
 //! #
 //! # fn main() {
-//! # use x25519_dalek::generate_secret;
-//! # use x25519_dalek::generate_public;
+//! # use x25519_dalek::SecretKey;
+//! # use x25519_dalek::PublicKey;
 //! # use rand::thread_rng;
 //! #
 //! let mut bob_csprng = thread_rng();
-//! let     bob_secret = generate_secret(&mut bob_csprng);
-//! let     bob_public = generate_public(&bob_secret);
+//! let     bob_secret = SecretKey::generate(&mut bob_csprng);
+//! let     bob_public = PublicKey::generate(&bob_secret);
 //! # }
 //! ```
 //!
@@ -76,21 +76,21 @@
 //! # extern crate rand;
 //! #
 //! # fn main() {
-//! # use x25519_dalek::generate_secret;
-//! # use x25519_dalek::generate_public;
+//! # use x25519_dalek::SecretKey;
+//! # use x25519_dalek::PublicKey;
 //! # use rand::thread_rng;
 //! #
 //! # let mut alice_csprng = thread_rng();
-//! # let     alice_secret = generate_secret(&mut alice_csprng);
-//! # let     alice_public = generate_public(&alice_secret);
+//! # let     alice_secret = SecretKey::generate(&mut alice_csprng);
+//! # let     alice_public = PublicKey::generate(&alice_secret);
 //! #
 //! # let mut bob_csprng = thread_rng();
-//! # let     bob_secret = generate_secret(&mut bob_csprng);
-//! # let     bob_public = generate_public(&bob_secret);
+//! # let     bob_secret = SecretKey::generate(&mut bob_csprng);
+//! # let     bob_public = PublicKey::generate(&bob_secret);
 //! #
 //! use x25519_dalek::diffie_hellman;
 //!
-//! let shared_secret = diffie_hellman(&alice_secret, &bob_public.as_bytes());
+//! let shared_secret = diffie_hellman(&alice_secret, &bob_public);
 //! # }
 //! ```
 //!
@@ -102,19 +102,19 @@
 //! #
 //! # fn main() {
 //! # use x25519_dalek::diffie_hellman;
-//! # use x25519_dalek::generate_secret;
-//! # use x25519_dalek::generate_public;
+//! # use x25519_dalek::SecretKey;
+//! # use x25519_dalek::PublicKey;
 //! # use rand::thread_rng;
 //! #
 //! # let mut alice_csprng = thread_rng();
-//! # let     alice_secret = generate_secret(&mut alice_csprng);
-//! # let     alice_public = generate_public(&alice_secret);
+//! # let     alice_secret = SecretKey::generate(&mut alice_csprng);
+//! # let     alice_public = PublicKey::generate(&alice_secret);
 //! #
 //! # let mut bob_csprng = thread_rng();
-//! # let     bob_secret = generate_secret(&mut bob_csprng);
-//! # let     bob_public = generate_public(&bob_secret);
+//! # let     bob_secret = SecretKey::generate(&mut bob_csprng);
+//! # let     bob_public = PublicKey::generate(&bob_secret);
 //! #
-//! let shared_secret = diffie_hellman(&bob_secret, &alice_public.as_bytes());
+//! let shared_secret = diffie_hellman(&bob_secret, &alice_public);
 //! # }
 //! ```
 //!
@@ -129,6 +129,8 @@
 extern crate curve25519_dalek;
 
 extern crate rand_core;
+
+extern crate clear_on_drop;
 
 #[cfg(test)]
 extern crate rand;
