@@ -306,4 +306,29 @@ mod test {
         assert_eq!(private_key, priv_key_reconstituted);
         assert_eq!(secret_bytes, reconstituted_bytes);
     }
+
+    #[test]
+    fn test_golang_compatibility() {
+        let local_priv: [u8; 32] = [
+            15, 54, 189, 54, 63, 255, 158, 244, 56, 168, 155, 63, 246, 79, 208, 192, 35, 194, 39,
+            232, 170, 187, 179, 36, 65, 36, 237, 12, 225, 176, 201, 54,
+        ];
+        let remote_pub: [u8; 32] = [
+            193, 34, 183, 46, 148, 99, 179, 185, 242, 148, 38, 40, 37, 150, 76, 251, 25, 51, 46,
+            143, 189, 201, 169, 218, 37, 136, 51, 144, 88, 196, 10, 20,
+        ];
+
+        // generated using computeDHSecret in go
+        let expected_dh: [u8; 32] = [
+            92, 56, 205, 118, 191, 208, 49, 3, 226, 150, 30, 205, 230, 157, 163, 7, 36, 28, 223,
+            84, 165, 43, 78, 38, 126, 200, 40, 217, 29, 36, 43, 37,
+        ];
+
+        let got_dh = EphemeralSecret::diffie_hellman(
+            EphemeralSecret::from(local_priv),
+            &EphemeralPublic::from(remote_pub),
+        );
+
+        assert_eq!(expected_dh, got_dh.to_bytes());
+    }
 }
