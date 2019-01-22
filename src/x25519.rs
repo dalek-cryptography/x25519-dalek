@@ -35,6 +35,11 @@ impl From<[u8; 32]> for EphemeralPublic {
 }
 
 impl EphemeralPublic {
+    /// View this public key as an array of bytes.
+    pub fn as_bytes<'a>(&'a self) -> &'a [u8; 32] {
+        self.0.as_bytes()
+    }
+
     /// Utility function to convert this public key to its raw bytes.
     pub fn to_bytes(&self) -> [u8; 32] {
         self.0.to_bytes()
@@ -70,6 +75,11 @@ impl EphemeralSecret {
         csprng.fill_bytes(&mut bytes);
 
         EphemeralSecret(clamp_scalar(bytes))
+    }
+
+    /// View this secret as an array of bytes.
+    pub fn as_bytes<'a>(&'a self) -> &'a [u8; 32] {
+        self.0.as_bytes()
     }
 
     /// Converts this secret to its raw byte array representation.
@@ -290,9 +300,9 @@ mod test {
         let mut local_csprng = OsRng::new().unwrap();
         let private_key = EphemeralSecret::new(&mut local_csprng);
         let public_key = EphemeralPublic::from(&private_key);
-        let pub_key_bytes = public_key.to_bytes();
-        let pub_key_reconstituted = EphemeralPublic::from(pub_key_bytes);
-        assert_eq!(public_key.0.to_bytes(), pub_key_bytes);
+        let pub_key_bytes = public_key.as_bytes();
+        let pub_key_reconstituted = EphemeralPublic::from(*pub_key_bytes);
+        assert_eq!(public_key.0.as_bytes(), pub_key_bytes);
         assert_eq!(public_key, pub_key_reconstituted);
     }
 
@@ -300,9 +310,9 @@ mod test {
     fn test_ephemeral_secret_to_and_from_bytes() {
         let mut local_csprng = OsRng::new().unwrap();
         let private_key = EphemeralSecret::new(&mut local_csprng);
-        let secret_bytes = private_key.to_bytes();
-        let priv_key_reconstituted = EphemeralSecret::from(secret_bytes);
-        let reconstituted_bytes = priv_key_reconstituted.to_bytes();
+        let secret_bytes = private_key.as_bytes();
+        let priv_key_reconstituted = EphemeralSecret::from(*secret_bytes);
+        let reconstituted_bytes = priv_key_reconstituted.as_bytes();
         assert_eq!(private_key, priv_key_reconstituted);
         assert_eq!(secret_bytes, reconstituted_bytes);
     }
