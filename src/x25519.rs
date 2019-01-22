@@ -42,6 +42,7 @@ impl EphemeralPublic {
 }
 
 /// A DH ephemeral secret key.
+#[derive(Clone, Debug, PartialEq)]
 pub struct EphemeralSecret(pub(crate) Scalar);
 
 /// Overwrite ephemeral secret key material with null bytes when it goes out of scope.
@@ -70,6 +71,18 @@ impl EphemeralSecret {
 
         EphemeralSecret(clamp_scalar(bytes))
     }
+
+    /// Converts this secret to its raw byte array representation.
+    pub fn to_bytes(&self) -> [u8; 32] {
+        self.0.to_bytes()
+    }
+}
+
+impl From<[u8; 32]> for EphemeralSecret {
+    /// Given a byte array, construct an `EphemeralSecret`.
+    fn from(bytes: [u8; 32]) -> EphemeralSecret {
+        EphemeralSecret(clamp_scalar(bytes))
+    }
 }
 
 impl<'a> From<&'a EphemeralSecret> for EphemeralPublic {
@@ -95,6 +108,11 @@ impl SharedSecret {
     #[inline]
     pub fn as_bytes(&self) -> &[u8; 32] {
         &self.0.as_bytes()
+    }
+
+    /// Converts this shared secret to its raw bytes.
+    pub fn to_bytes(&self) -> [u8; 32] {
+        self.0.to_bytes()
     }
 }
 
@@ -134,6 +152,7 @@ pub const X25519_BASEPOINT_BYTES: [u8; 32] = [
 #[cfg(test)]
 mod test {
     extern crate rand_os;
+    extern crate std;
     use self::rand_os::OsRng;
 
     use super::*;
@@ -275,5 +294,16 @@ mod test {
         let pub_key_reconstituted = EphemeralPublic::from(pub_key_bytes);
         assert_eq!(public_key.0.to_bytes(), pub_key_bytes);
         assert_eq!(public_key, pub_key_reconstituted);
+    }
+
+    #[test]
+    fn test_ephemeral_secret_to_and_from_bytes() {
+        let mut local_csprng = OsRng::new().unwrap();
+        let private_key = EphemeralSecret::new(&mut local_csprng);
+        let secret_bytes = private_key.to_bytes();
+        let priv_key_reconstituted = EphemeralSecret::from(secret_bytes);
+        let reconstituted_bytes = priv_key_reconstituted.to_bytes();
+        assert_eq!(private_key, priv_key_reconstituted);
+        assert_eq!(secret_bytes, reconstituted_bytes);
     }
 }
