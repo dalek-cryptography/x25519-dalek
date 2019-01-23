@@ -20,12 +20,11 @@ use curve25519_dalek::constants::ED25519_BASEPOINT_TABLE;
 use curve25519_dalek::montgomery::MontgomeryPoint;
 use curve25519_dalek::scalar::Scalar;
 
-use rand_core::CryptoRng;
 use rand_core::RngCore;
+use rand_core::CryptoRng;
 
 /// A DH ephemeral public key.
-#[derive(Copy, Clone, Debug, PartialEq)]
-pub struct EphemeralPublic(pub(crate) MontgomeryPoint);
+pub struct EphemeralPublic(pub (crate) MontgomeryPoint);
 
 impl From<[u8; 32]> for EphemeralPublic {
     /// Given a byte array, construct an x25519 `EphemeralPublic` key
@@ -35,20 +34,15 @@ impl From<[u8; 32]> for EphemeralPublic {
 }
 
 impl EphemeralPublic {
-    /// View this public key as an array of bytes.
-    pub fn as_bytes<'a>(&'a self) -> &'a [u8; 32] {
+    /// View this ephemeral public key as a byte array.
+    #[inline]
+    pub fn as_bytes(&self) -> &[u8; 32] {
         self.0.as_bytes()
-    }
-
-    /// Utility function to convert this public key to its raw bytes.
-    pub fn to_bytes(&self) -> [u8; 32] {
-        self.0.to_bytes()
     }
 }
 
 /// A DH ephemeral secret key.
-#[derive(Clone, Debug, PartialEq)]
-pub struct EphemeralSecret(pub(crate) Scalar);
+pub struct EphemeralSecret(pub (crate) Scalar);
 
 /// Overwrite ephemeral secret key material with null bytes when it goes out of scope.
 impl Drop for EphemeralSecret {
@@ -67,8 +61,7 @@ impl EphemeralSecret {
 
     /// Generate an x25519 `EphemeralSecret` key.
     pub fn new<T>(csprng: &mut T) -> Self
-    where
-        T: RngCore + CryptoRng,
+        where T: RngCore + CryptoRng
     {
         let mut bytes = [0u8; 32];
 
@@ -77,22 +70,6 @@ impl EphemeralSecret {
         EphemeralSecret(clamp_scalar(bytes))
     }
 
-    /// View this secret as an array of bytes.
-    pub fn as_bytes<'a>(&'a self) -> &'a [u8; 32] {
-        self.0.as_bytes()
-    }
-
-    /// Converts this secret to its raw byte array representation.
-    pub fn to_bytes(&self) -> [u8; 32] {
-        self.0.to_bytes()
-    }
-}
-
-impl From<[u8; 32]> for EphemeralSecret {
-    /// Given a byte array, construct an `EphemeralSecret`.
-    fn from(bytes: [u8; 32]) -> EphemeralSecret {
-        EphemeralSecret(clamp_scalar(bytes))
-    }
 }
 
 impl<'a> From<&'a EphemeralSecret> for EphemeralPublic {
@@ -101,10 +78,11 @@ impl<'a> From<&'a EphemeralSecret> for EphemeralPublic {
     fn from(secret: &'a EphemeralSecret) -> EphemeralPublic {
         EphemeralPublic((&ED25519_BASEPOINT_TABLE * &secret.0).to_montgomery())
     }
+
 }
 
 /// A DH SharedSecret
-pub struct SharedSecret(pub(crate) MontgomeryPoint);
+pub struct SharedSecret(pub (crate) MontgomeryPoint);
 
 /// Overwrite shared secret material with null bytes when it goes out of scope.
 impl Drop for SharedSecret {
@@ -117,12 +95,7 @@ impl SharedSecret {
     /// View this shared secret key as a byte array.
     #[inline]
     pub fn as_bytes(&self) -> &[u8; 32] {
-        &self.0.as_bytes()
-    }
-
-    /// Converts this shared secret to its raw bytes.
-    pub fn to_bytes(&self) -> [u8; 32] {
-        self.0.to_bytes()
+        self.0.as_bytes()
     }
 }
 
@@ -137,7 +110,7 @@ impl SharedSecret {
 fn clamp_scalar(scalar: [u8; 32]) -> Scalar {
     let mut s: [u8; 32] = scalar.clone();
 
-    s[0] &= 248;
+    s[0]  &= 248;
     s[31] &= 127;
     s[31] |= 64;
 
@@ -161,10 +134,6 @@ pub const X25519_BASEPOINT_BYTES: [u8; 32] = [
 
 #[cfg(test)]
 mod test {
-    extern crate rand_os;
-    extern crate std;
-    use self::rand_os::OsRng;
-
     use super::*;
 
     #[test]
@@ -193,20 +162,20 @@ mod test {
     #[test]
     fn rfc7748_ladder_test1_vectorset1() {
         let input_scalar: [u8; 32] = [
-            0xa5, 0x46, 0xe3, 0x6b, 0xf0, 0x52, 0x7c, 0x9d, 0x3b, 0x16, 0x15, 0x4b, 0x82, 0x46,
-            0x5e, 0xdd, 0x62, 0x14, 0x4c, 0x0a, 0xc1, 0xfc, 0x5a, 0x18, 0x50, 0x6a, 0x22, 0x44,
-            0xba, 0x44, 0x9a, 0xc4,
-        ];
+            0xa5, 0x46, 0xe3, 0x6b, 0xf0, 0x52, 0x7c, 0x9d,
+            0x3b, 0x16, 0x15, 0x4b, 0x82, 0x46, 0x5e, 0xdd,
+            0x62, 0x14, 0x4c, 0x0a, 0xc1, 0xfc, 0x5a, 0x18,
+            0x50, 0x6a, 0x22, 0x44, 0xba, 0x44, 0x9a, 0xc4, ];
         let input_point: [u8; 32] = [
-            0xe6, 0xdb, 0x68, 0x67, 0x58, 0x30, 0x30, 0xdb, 0x35, 0x94, 0xc1, 0xa4, 0x24, 0xb1,
-            0x5f, 0x7c, 0x72, 0x66, 0x24, 0xec, 0x26, 0xb3, 0x35, 0x3b, 0x10, 0xa9, 0x03, 0xa6,
-            0xd0, 0xab, 0x1c, 0x4c,
-        ];
+            0xe6, 0xdb, 0x68, 0x67, 0x58, 0x30, 0x30, 0xdb,
+            0x35, 0x94, 0xc1, 0xa4, 0x24, 0xb1, 0x5f, 0x7c,
+            0x72, 0x66, 0x24, 0xec, 0x26, 0xb3, 0x35, 0x3b,
+            0x10, 0xa9, 0x03, 0xa6, 0xd0, 0xab, 0x1c, 0x4c, ];
         let expected: [u8; 32] = [
-            0xc3, 0xda, 0x55, 0x37, 0x9d, 0xe9, 0xc6, 0x90, 0x8e, 0x94, 0xea, 0x4d, 0xf2, 0x8d,
-            0x08, 0x4f, 0x32, 0xec, 0xcf, 0x03, 0x49, 0x1c, 0x71, 0xf7, 0x54, 0xb4, 0x07, 0x55,
-            0x77, 0xa2, 0x85, 0x52,
-        ];
+            0xc3, 0xda, 0x55, 0x37, 0x9d, 0xe9, 0xc6, 0x90,
+            0x8e, 0x94, 0xea, 0x4d, 0xf2, 0x8d, 0x08, 0x4f,
+            0x32, 0xec, 0xcf, 0x03, 0x49, 0x1c, 0x71, 0xf7,
+            0x54, 0xb4, 0x07, 0x55, 0x77, 0xa2, 0x85, 0x52, ];
 
         do_rfc7748_ladder_test1(input_scalar, input_point, expected);
     }
@@ -214,20 +183,20 @@ mod test {
     #[test]
     fn rfc7748_ladder_test1_vectorset2() {
         let input_scalar: [u8; 32] = [
-            0x4b, 0x66, 0xe9, 0xd4, 0xd1, 0xb4, 0x67, 0x3c, 0x5a, 0xd2, 0x26, 0x91, 0x95, 0x7d,
-            0x6a, 0xf5, 0xc1, 0x1b, 0x64, 0x21, 0xe0, 0xea, 0x01, 0xd4, 0x2c, 0xa4, 0x16, 0x9e,
-            0x79, 0x18, 0xba, 0x0d,
-        ];
+            0x4b, 0x66, 0xe9, 0xd4, 0xd1, 0xb4, 0x67, 0x3c,
+            0x5a, 0xd2, 0x26, 0x91, 0x95, 0x7d, 0x6a, 0xf5,
+            0xc1, 0x1b, 0x64, 0x21, 0xe0, 0xea, 0x01, 0xd4,
+            0x2c, 0xa4, 0x16, 0x9e, 0x79, 0x18, 0xba, 0x0d, ];
         let input_point: [u8; 32] = [
-            0xe5, 0x21, 0x0f, 0x12, 0x78, 0x68, 0x11, 0xd3, 0xf4, 0xb7, 0x95, 0x9d, 0x05, 0x38,
-            0xae, 0x2c, 0x31, 0xdb, 0xe7, 0x10, 0x6f, 0xc0, 0x3c, 0x3e, 0xfc, 0x4c, 0xd5, 0x49,
-            0xc7, 0x15, 0xa4, 0x93,
-        ];
+            0xe5, 0x21, 0x0f, 0x12, 0x78, 0x68, 0x11, 0xd3,
+            0xf4, 0xb7, 0x95, 0x9d, 0x05, 0x38, 0xae, 0x2c,
+            0x31, 0xdb, 0xe7, 0x10, 0x6f, 0xc0, 0x3c, 0x3e,
+            0xfc, 0x4c, 0xd5, 0x49, 0xc7, 0x15, 0xa4, 0x93, ];
         let expected: [u8; 32] = [
-            0x95, 0xcb, 0xde, 0x94, 0x76, 0xe8, 0x90, 0x7d, 0x7a, 0xad, 0xe4, 0x5c, 0xb4, 0xb8,
-            0x73, 0xf8, 0x8b, 0x59, 0x5a, 0x68, 0x79, 0x9f, 0xa1, 0x52, 0xe6, 0xf8, 0xf7, 0x64,
-            0x7a, 0xac, 0x79, 0x57,
-        ];
+            0x95, 0xcb, 0xde, 0x94, 0x76, 0xe8, 0x90, 0x7d,
+            0x7a, 0xad, 0xe4, 0x5c, 0xb4, 0xb8, 0x73, 0xf8,
+            0x8b, 0x59, 0x5a, 0x68, 0x79, 0x9f, 0xa1, 0x52,
+            0xe6, 0xf8, 0xf7, 0x64, 0x7a, 0xac, 0x79, 0x57, ];
 
         do_rfc7748_ladder_test1(input_scalar, input_point, expected);
     }
@@ -242,7 +211,7 @@ mod test {
         let mut result: [u8; 32];
 
         macro_rules! do_iterations {
-            ($n:expr) => {
+            ($n:expr) => (
                 for _ in 0..$n {
                     result = x25519(k, u);
                     // OBVIOUS THING THAT I'M GOING TO NOTE ANYWAY BECAUSE I'VE
@@ -256,7 +225,7 @@ mod test {
                     u = k.clone();
                     k = result;
                 }
-            };
+            )
         }
 
         // After one iteration:
@@ -267,78 +236,19 @@ mod test {
         //     7c3911e0ab2586fd864497297e575e6f3bc601c0883c30df5f4dd2d24f665424
 
         do_iterations!(1);
-        assert_eq!(
-            k,
-            [
-                0x42, 0x2c, 0x8e, 0x7a, 0x62, 0x27, 0xd7, 0xbc, 0xa1, 0x35, 0x0b, 0x3e, 0x2b, 0xb7,
-                0x27, 0x9f, 0x78, 0x97, 0xb8, 0x7b, 0xb6, 0x85, 0x4b, 0x78, 0x3c, 0x60, 0xe8, 0x03,
-                0x11, 0xae, 0x30, 0x79,
-            ]
-        );
+        assert_eq!(k, [ 0x42, 0x2c, 0x8e, 0x7a, 0x62, 0x27, 0xd7, 0xbc,
+                        0xa1, 0x35, 0x0b, 0x3e, 0x2b, 0xb7, 0x27, 0x9f,
+                        0x78, 0x97, 0xb8, 0x7b, 0xb6, 0x85, 0x4b, 0x78,
+                        0x3c, 0x60, 0xe8, 0x03, 0x11, 0xae, 0x30, 0x79, ]);
         do_iterations!(999);
-        assert_eq!(
-            k,
-            [
-                0x68, 0x4c, 0xf5, 0x9b, 0xa8, 0x33, 0x09, 0x55, 0x28, 0x00, 0xef, 0x56, 0x6f, 0x2f,
-                0x4d, 0x3c, 0x1c, 0x38, 0x87, 0xc4, 0x93, 0x60, 0xe3, 0x87, 0x5f, 0x2e, 0xb9, 0x4d,
-                0x99, 0x53, 0x2c, 0x51,
-            ]
-        );
+        assert_eq!(k, [ 0x68, 0x4c, 0xf5, 0x9b, 0xa8, 0x33, 0x09, 0x55,
+                        0x28, 0x00, 0xef, 0x56, 0x6f, 0x2f, 0x4d, 0x3c,
+                        0x1c, 0x38, 0x87, 0xc4, 0x93, 0x60, 0xe3, 0x87,
+                        0x5f, 0x2e, 0xb9, 0x4d, 0x99, 0x53, 0x2c, 0x51, ]);
         do_iterations!(999_000);
-        assert_eq!(
-            k,
-            [
-                0x7c, 0x39, 0x11, 0xe0, 0xab, 0x25, 0x86, 0xfd, 0x86, 0x44, 0x97, 0x29, 0x7e, 0x57,
-                0x5e, 0x6f, 0x3b, 0xc6, 0x01, 0xc0, 0x88, 0x3c, 0x30, 0xdf, 0x5f, 0x4d, 0xd2, 0xd2,
-                0x4f, 0x66, 0x54, 0x24,
-            ]
-        );
-    }
-
-    #[test]
-    fn test_ephemeral_public_to_and_from_bytes() {
-        let mut local_csprng = OsRng::new().unwrap();
-        let private_key = EphemeralSecret::new(&mut local_csprng);
-        let public_key = EphemeralPublic::from(&private_key);
-        let pub_key_bytes = public_key.as_bytes();
-        let pub_key_reconstituted = EphemeralPublic::from(*pub_key_bytes);
-        assert_eq!(public_key.0.as_bytes(), pub_key_bytes);
-        assert_eq!(public_key, pub_key_reconstituted);
-    }
-
-    #[test]
-    fn test_ephemeral_secret_to_and_from_bytes() {
-        let mut local_csprng = OsRng::new().unwrap();
-        let private_key = EphemeralSecret::new(&mut local_csprng);
-        let secret_bytes = private_key.as_bytes();
-        let priv_key_reconstituted = EphemeralSecret::from(*secret_bytes);
-        let reconstituted_bytes = priv_key_reconstituted.as_bytes();
-        assert_eq!(private_key, priv_key_reconstituted);
-        assert_eq!(secret_bytes, reconstituted_bytes);
-    }
-
-    #[test]
-    fn test_golang_compatibility() {
-        let local_priv: [u8; 32] = [
-            15, 54, 189, 54, 63, 255, 158, 244, 56, 168, 155, 63, 246, 79, 208, 192, 35, 194, 39,
-            232, 170, 187, 179, 36, 65, 36, 237, 12, 225, 176, 201, 54,
-        ];
-        let remote_pub: [u8; 32] = [
-            193, 34, 183, 46, 148, 99, 179, 185, 242, 148, 38, 40, 37, 150, 76, 251, 25, 51, 46,
-            143, 189, 201, 169, 218, 37, 136, 51, 144, 88, 196, 10, 20,
-        ];
-
-        // generated using computeDHSecret in go
-        let expected_dh: [u8; 32] = [
-            92, 56, 205, 118, 191, 208, 49, 3, 226, 150, 30, 205, 230, 157, 163, 7, 36, 28, 223,
-            84, 165, 43, 78, 38, 126, 200, 40, 217, 29, 36, 43, 37,
-        ];
-
-        let got_dh = EphemeralSecret::diffie_hellman(
-            EphemeralSecret::from(local_priv),
-            &EphemeralPublic::from(remote_pub),
-        );
-
-        assert_eq!(expected_dh, got_dh.to_bytes());
+        assert_eq!(k, [ 0x7c, 0x39, 0x11, 0xe0, 0xab, 0x25, 0x86, 0xfd,
+                        0x86, 0x44, 0x97, 0x29, 0x7e, 0x57, 0x5e, 0x6f,
+                        0x3b, 0xc6, 0x01, 0xc0, 0x88, 0x3c, 0x30, 0xdf,
+                        0x5f, 0x4d, 0xd2, 0xd2, 0x4f, 0x66, 0x54, 0x24, ]);
     }
 }
