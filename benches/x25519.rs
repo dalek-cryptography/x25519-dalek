@@ -37,12 +37,12 @@ fn bench_diffie_hellman(c: &mut Criterion) {
     });
 }
 
-criterion_group! {
+criterion_group!{
     name = x25519_benches;
     config = Criterion::default();
     targets =
         bench_diffie_hellman,
 }
-criterion_main! {
+criterion_main!{
     x25519_benches,
 }
