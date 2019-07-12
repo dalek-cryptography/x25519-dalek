@@ -200,7 +200,7 @@ mod test {
     // lives here.
     #[test]
     fn alice_and_bob() {
-        let mut csprng = OsRng::new().unwrap();
+        let mut csprng = OsRng;
         let alice_secret = EphemeralSecret::new(&mut csprng);
         let alice_public = PublicKey::from(&alice_secret);
         let bob_secret = EphemeralSecret::new(&mut csprng);
