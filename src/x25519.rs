@@ -20,8 +20,7 @@ use curve25519_dalek::constants::ED25519_BASEPOINT_TABLE;
 use curve25519_dalek::montgomery::MontgomeryPoint;
 use curve25519_dalek::scalar::Scalar;
 
-use rand_core::RngCore;
-use rand_core::CryptoRng;
+use rand_core::{CryptoRng, RngCore};
 
 /// A `PublicKey` is the corresponding public key converted from
 /// an `EphemeralSecret` or a `StaticSecret` key.
@@ -200,10 +199,9 @@ mod test {
     // lives here.
     #[test]
     fn alice_and_bob() {
-        let mut csprng = OsRng::new().unwrap();
-        let alice_secret = EphemeralSecret::new(&mut csprng);
+        let alice_secret = EphemeralSecret::new(&mut OsRng);
         let alice_public = PublicKey::from(&alice_secret);
-        let bob_secret = EphemeralSecret::new(&mut csprng);
+        let bob_secret = EphemeralSecret::new(&mut OsRng);
         let bob_public = PublicKey::from(&bob_secret);
         let alice_shared_secret = alice_secret.diffie_hellman(&bob_public);
         let bob_shared_secret = bob_secret.diffie_hellman(&alice_public);
