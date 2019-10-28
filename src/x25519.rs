@@ -23,6 +23,9 @@ use curve25519_dalek::scalar::Scalar;
 use rand_core::RngCore;
 use rand_core::CryptoRng;
 
+use subtle::Choice;
+use subtle::ConstantTimeEq;
+
 /// A `PublicKey` is the corresponding public key converted from
 /// an `EphemeralSecret` or a `StaticSecret` key.
 #[derive(Copy, Clone, Debug)]
@@ -51,6 +54,12 @@ pub struct EphemeralSecret(pub (crate) Scalar);
 impl Drop for EphemeralSecret {
     fn drop(&mut self) {
         self.0.clear();
+    }
+}
+
+impl ConstantTimeEq for EphemeralSecret {
+    fn ct_eq(&self, other: &Self) -> Choice {
+        self.0.ct_eq(&other.0)
     }
 }
 
@@ -93,6 +102,12 @@ pub struct StaticSecret(pub (crate) Scalar);
 impl Drop for StaticSecret {
     fn drop(&mut self) {
         self.0.clear();
+    }
+}
+
+impl ConstantTimeEq for StaticSecret {
+    fn ct_eq(&self, other: &Self) -> Choice {
+        self.0.ct_eq(&other.0)
     }
 }
 
