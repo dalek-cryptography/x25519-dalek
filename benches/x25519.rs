@@ -21,6 +21,7 @@ use criterion::Criterion;
 
 use rand_core::OsRng;
 
+use x25519_dalek::Secret;
 use x25519_dalek::EphemeralSecret;
 use x25519_dalek::PublicKey;
 

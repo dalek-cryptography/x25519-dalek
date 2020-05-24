@@ -48,6 +48,13 @@ impl PublicKey {
     }
 }
 
+/// any secret should be able to do DH
+pub trait Secret {
+    /// Perform a Diffie-Hellman key agreement between `self` and
+    /// `their_public` key to produce a `SharedSecret`.
+    fn diffie_hellman(&self, their_public: &PublicKey) -> SharedSecret;
+}
+
 /// A `EphemeralSecret` is a short lived Diffie-Hellman secret key
 /// used to create a `SharedSecret` when given their `PublicKey`.
 #[derive(Zeroize)]
@@ -55,12 +62,6 @@ impl PublicKey {
 pub struct EphemeralSecret(pub(crate) Scalar);
 
 impl EphemeralSecret {
-    /// Perform a Diffie-Hellman key agreement between `self` and
-    /// `their_public` key to produce a `SharedSecret`.
-    pub fn diffie_hellman(self, their_public: &PublicKey) -> SharedSecret {
-        SharedSecret(self.0 * their_public.0)
-    }
-
     /// Generate an x25519 `EphemeralSecret` key.
     pub fn new<T>(csprng: &mut T) -> Self
     where
@@ -71,6 +72,14 @@ impl EphemeralSecret {
         csprng.fill_bytes(&mut bytes);
 
         EphemeralSecret(clamp_scalar(bytes))
+    }
+}
+
+impl Secret for EphemeralSecret {
+    /// Perform a Diffie-Hellman key agreement between `self` and
+    /// `their_public` key to produce a `SharedSecret`.
+    fn diffie_hellman(&self, their_public: &PublicKey) -> SharedSecret {
+        SharedSecret(&self.0 * their_public.0)
     }
 }
 
@@ -97,12 +106,6 @@ pub struct StaticSecret(
 );
 
 impl StaticSecret {
-    /// Perform a Diffie-Hellman key agreement between `self` and
-    /// `their_public` key to produce a `SharedSecret`.
-    pub fn diffie_hellman(&self, their_public: &PublicKey) -> SharedSecret {
-        SharedSecret(&self.0 * their_public.0)
-    }
-
     /// Generate a x25519 `StaticSecret` key.
     pub fn new<T>(csprng: &mut T) -> Self
     where
@@ -118,6 +121,14 @@ impl StaticSecret {
     /// Save a x25519 `StaticSecret` key's bytes.
     pub fn to_bytes(&self) -> [u8; 32] {
         self.0.to_bytes()
+    }
+}
+
+impl Secret for StaticSecret {
+    /// Perform a Diffie-Hellman key agreement between `self` and
+    /// `their_public` key to produce a `SharedSecret`.
+    fn diffie_hellman(&self, their_public: &PublicKey) -> SharedSecret {
+        SharedSecret(&self.0 * their_public.0)
     }
 }
 
