@@ -23,6 +23,9 @@ use rand_core::RngCore;
 
 use zeroize::Zeroize;
 
+#[cfg(feature = "ed25519-dalek-conv")]
+use curve25519_dalek::edwards::CompressedEdwardsY;
+
 /// A Diffie-Hellman public key, corresponding to an [`EphemeralSecret`] or [`StaticSecret`] key.
 #[cfg_attr(feature = "serde", serde(crate = "our_serde"))]
 #[cfg_attr(
@@ -137,6 +140,14 @@ impl StaticSecret {
     }
 }
 
+#[cfg(feature = "ed25519-dalek-conv")]
+impl From<ed25519_dalek::SecretKey> for StaticSecret {
+    /// Create Static Secret from [ed25519] SecretKey
+    fn from(ss: ed25519_dalek::SecretKey) -> Self {
+        StaticSecret::from(ss.to_bytes())
+    }
+}
+
 impl From<[u8; 32]> for StaticSecret {
     /// Load a secret key from a byte array.
     fn from(bytes: [u8; 32]) -> StaticSecret {
@@ -148,6 +159,20 @@ impl<'a> From<&'a StaticSecret> for PublicKey {
     /// Given an x25519 [`StaticSecret`] key, compute its corresponding [`PublicKey`].
     fn from(secret: &'a StaticSecret) -> PublicKey {
         PublicKey((&ED25519_BASEPOINT_TABLE * &secret.0).to_montgomery())
+    }
+}
+
+#[cfg(feature = "ed25519-dalek-conv")]
+impl From<ed25519_dalek::PublicKey> for PublicKey {
+    /// Create PublicKey from [ed25519] PublicKey
+    fn from(pk: ed25519_dalek::PublicKey) -> Self {
+        let data = pk.to_bytes();
+        let mut bits: [u8; 32] = [0u8; 32];
+        bits.copy_from_slice(&data[..32]);
+        let compressed = CompressedEdwardsY(bits);
+        let point = compressed.decompress().unwrap();
+        let m_point = point.to_montgomery();
+        Self(m_point)
     }
 }
 
@@ -227,6 +252,8 @@ mod test {
     use super::*;
 
     use rand_core::OsRng;
+    #[cfg(feature = "ed25519-dalek-conv")]
+    use ed25519_dalek::Keypair;
 
     #[test]
     fn byte_basepoint_matches_edwards_scalar_mul() {
@@ -300,6 +327,17 @@ mod test {
         let result = x25519(input_scalar, input_point);
 
         assert_eq!(result, expected);
+    }
+
+    #[test]
+    #[cfg(feature = "ed25519-dalek-conv")]
+    fn conv_test() {
+        let key_pair = Keypair::generate(&mut OsRng);
+        let private_key = key_pair.secret;
+        let public_key = key_pair.public;
+        let dh_private_key = StaticSecret::from(private_key);
+        let dh_public_key = PublicKey::from(public_key);
+        dh_private_key.diffie_hellman(&dh_public_key);
     }
 
     #[test]
