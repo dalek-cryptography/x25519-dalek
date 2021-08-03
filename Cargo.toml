@@ -5,9 +5,9 @@ edition = "2018"
 # - update version in README.md
 # - update html_root_url
 # - update CHANGELOG
-version = "1.1.1"
+version = "1.1.2-pre.0"
 authors = [
-    "Isis Lovecruft <isis@patternsinthevoid.net>", 
+    "Isis Lovecruft <isis@patternsinthevoid.net>",
     "DebugSteven <debugsteven@gmail.com>",
     "Henry de Valence <hdevalence@hdevalence.ca>",
 ]
@@ -33,7 +33,7 @@ travis-ci = { repository = "dalek-cryptography/x25519-dalek", branch = "master"}
 features = ["nightly"]
 
 [dependencies]
-curve25519-dalek = { version = "3", default-features = false }
+curve25519-dalek = { version = "4.0.0-pre.1", default-features = false }
 rand_core = { version = "0.5", default-features = false }
 # `serde` is renamed to `our_serde` in order to avoid a name collision between
 # importing the serde dependency and enabling the curve25519-dalek/serde feature
@@ -55,3 +55,8 @@ std = ["curve25519-dalek/std"]
 nightly = ["curve25519-dalek/nightly"]
 u64_backend = ["curve25519-dalek/u64_backend"]
 u32_backend = ["curve25519-dalek/u32_backend"]
+
+[patch.crates-io]
+# Fixes for nightly-2021-07-21
+curve25519-dalek = { git = "https://github.com/jcape/curve25519-dalek.git", rev = "46d07765b228d43fe910eb6a1769143f8fc366bb" }
+
