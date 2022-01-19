@@ -1,5 +1,16 @@
 
+use curve25519_dalek::constants::ED25519_BASEPOINT_TABLE;
+use curve25519_dalek::scalar::Scalar;
+
 use x25519_dalek::*;
+
+fn clamp_scalar(mut scalar: [u8; 32]) -> Scalar {
+    scalar[0] &= 248;
+    scalar[31] &= 127;
+    scalar[31] |= 64;
+
+    Scalar::from_bits(scalar)
+}
 
 #[test]
 fn byte_basepoint_matches_edwards_scalar_mul() {
@@ -48,8 +59,7 @@ fn serde_bincode_public_key_matches_from_bytes() {
 fn serde_bincode_static_secret_roundtrip() {
     use bincode;
 
-    let static_secret = StaticSecret(clamp_scalar([0x24; 32]));
-
+    let static_secret = StaticSecret::from([0x24; 32]);
     let encoded = bincode::serialize(&static_secret).unwrap();
     let decoded: StaticSecret = bincode::deserialize(&encoded).unwrap();
 
@@ -62,7 +72,7 @@ fn serde_bincode_static_secret_roundtrip() {
 fn serde_bincode_static_secret_matches_from_bytes() {
     use bincode;
 
-    let expected = StaticSecret(clamp_scalar([0x24; 32]));
+    let expected = StaticSecret::from([0x24; 32]);
     let clamped_bytes = clamp_scalar([0x24; 32]).to_bytes();
     let decoded: StaticSecret = bincode::deserialize(&clamped_bytes).unwrap();
 
