@@ -33,7 +33,7 @@ travis-ci = { repository = "dalek-cryptography/x25519-dalek", branch = "master"}
 features = ["nightly", "reusable_secrets", "serde"]
 
 [dependencies]
-curve25519-dalek = { version = "4.0.0-pre.1", default-features = false }
+curve25519-dalek = { version = "4.0.0-pre.2", default-features = false }
 rand_core = { version = "0.6", default-features = false }
 # `serde` is renamed to `our_serde` in order to avoid a name collision between
 # importing the serde dependency and enabling the curve25519-dalek/serde feature
@@ -58,3 +58,6 @@ u64_backend = ["curve25519-dalek/u64_backend"]
 u32_backend = ["curve25519-dalek/u32_backend"]
 fiat_u64_backend = ["curve25519-dalek/fiat_u64_backend"]
 fiat_u32_backend = ["curve25519-dalek/fiat_u32_backend"]
+
+[patch.crates-io]
+curve25519-dalek = { git = "https://github.com/remoun/curve25519-dalek.git", rev = "77391036a6e43f3c9a2d8b937e621dcfe9d95d8c" }
