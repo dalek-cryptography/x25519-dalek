@@ -60,4 +60,4 @@ fiat_u64_backend = ["curve25519-dalek/fiat_u64_backend"]
 fiat_u32_backend = ["curve25519-dalek/fiat_u32_backend"]
 
 [patch.crates-io]
-curve25519-dalek = { git = "https://github.com/remoun/curve25519-dalek.git", rev = "77391036a6e43f3c9a2d8b937e621dcfe9d95d8c" }
+curve25519-dalek = { git = "https://github.com/mobilecoinfoundation/curve25519-dalek.git", rev = "8791722e0273762552c9a056eaccb7df6baf44d7" }
