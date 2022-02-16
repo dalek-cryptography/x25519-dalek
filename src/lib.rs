@@ -124,7 +124,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! x25519-dalek = "2.0"
+//! x25519-dalek = "2.0.0-pre.2"
 //! ```
 //!
 //! # MSRV
