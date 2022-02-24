@@ -15,7 +15,7 @@ Entries are listed in reverse chronological order.
 * Pin `zeroize` to version 1.3 to support a wider range of MSRVs.
 * Add CI via Github actions.
 * Fix breakage in the serde unittests.
-* MSRV is now 1.41 for production and 1.48 for development.
+* MSRV is now 1.51 for production and 1.51 for development.
 * Add an optional check to `SharedSecret` for contibutory behaviour.
 * Add implementation of `ReusableSecret` keys which are non-ephemeral, but which
   cannot be serialised to discourage long-term use.
