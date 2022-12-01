@@ -210,6 +210,11 @@ impl<'a> From<&'a StaticSecret> for PublicKey {
 ///
 /// Each party computes this using their [`EphemeralSecret`] or [`StaticSecret`] and their
 /// counterparty's [`PublicKey`].
+#[cfg_attr(feature = "serde", serde(crate = "our_serde"))]
+#[cfg_attr(
+    feature = "serde",
+    derive(our_serde::Serialize, our_serde::Deserialize)
+)]
 #[derive(Zeroize)]
 #[zeroize(drop)]
 pub struct SharedSecret(pub(crate) MontgomeryPoint);
