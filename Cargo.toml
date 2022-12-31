@@ -34,7 +34,7 @@ travis-ci = { repository = "dalek-cryptography/x25519-dalek", branch = "master"}
 features = ["nightly", "reusable_secrets", "serde"]
 
 [dependencies]
-curve25519-dalek = { git="ssh://git@github.com/dalek-cryptography/curve25519-dalek", rev="06186b8", default-features = false }
+curve25519-dalek = { git="ssh://git@github.com/dalek-cryptography/curve25519-dalek", rev="39dbaea"}
 rand_core = { version = "=0.6", default-features = false, features = ["getrandom"] }
 # `serde` is renamed to `our_serde` in order to avoid a name collision between
 # importing the serde dependency and enabling the curve25519-dalek/serde feature
