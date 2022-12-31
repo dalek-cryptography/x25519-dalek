@@ -34,7 +34,7 @@ travis-ci = { repository = "dalek-cryptography/x25519-dalek", branch = "master"}
 features = ["nightly", "reusable_secrets", "serde"]
 
 [dependencies]
-curve25519-dalek = { version = "3", default-features = false }
+curve25519-dalek = { git="ssh://git@github.com/dalek-cryptography/curve25519-dalek", rev="06186b8", default-features = false }
 rand_core = { version = "=0.6", default-features = false, features = ["getrandom"] }
 # `serde` is renamed to `our_serde` in order to avoid a name collision between
 # importing the serde dependency and enabling the curve25519-dalek/serde feature
@@ -50,12 +50,12 @@ name = "x25519"
 harness = false
 
 [features]
-default = ["std", "u64_backend"]
+default = ["std"]
 serde = ["our_serde", "curve25519-dalek/serde"]
-std = ["curve25519-dalek/std"]
-nightly = ["curve25519-dalek/nightly"]
+std = []
+# nightly = ["curve25519-dalek/nightly"]
 reusable_secrets = []
-u64_backend = ["curve25519-dalek/u64_backend"]
-u32_backend = ["curve25519-dalek/u32_backend"]
-fiat_u64_backend = ["curve25519-dalek/fiat_u64_backend"]
-fiat_u32_backend = ["curve25519-dalek/fiat_u32_backend"]
+# u64_backend = ["curve25519-dalek/u64_backend"]
+# u32_backend = ["curve25519-dalek/u32_backend"]
+# fiat_u64_backend = ["curve25519-dalek/fiat_u64_backend"]
+# fiat_u32_backend = ["curve25519-dalek/fiat_u32_backend"]
