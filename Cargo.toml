@@ -49,7 +49,7 @@ name = "x25519"
 harness = false
 
 [features]
-default = ["alloc", "precomputed-tables", "zeroize"]
+default = ["alloc", "fast", "zeroize"]
 zeroize = ["dep:zeroize", "curve25519-dalek/zeroize"]
 serde = ["dep:serde", "curve25519-dalek/serde"]
 alloc = ["curve25519-dalek/alloc", "serde?/alloc", "zeroize?/alloc"]
