@@ -14,7 +14,7 @@ jobs:
     name: Test u32 backend
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: actions-rs/toolchain@v1
       with:
         profile: minimal
@@ -29,7 +29,7 @@ jobs:
     name: Test u64 backend
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: actions-rs/toolchain@v1
       with:
         profile: minimal
@@ -44,7 +44,7 @@ jobs:
     name: Test nightly compiler
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: actions-rs/toolchain@v1
       with:
         profile: minimal
@@ -59,7 +59,7 @@ jobs:
     name: Test default feature selection and serde
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: actions-rs/toolchain@v1
       with:
         profile: minimal
@@ -74,7 +74,7 @@ jobs:
     name: Current MSRV is 1.41
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: actions-rs/toolchain@v1
       with:
         profile: minimal
@@ -88,7 +88,7 @@ jobs:
     name: Check that benchmarks compile
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: actions-rs/toolchain@v1
       with:
         profile: minimal
