@@ -20,10 +20,7 @@ jobs:
         profile: minimal
         toolchain: stable
         override: true
-    - uses: actions-rs/cargo@v1
-      with:
-        command: test
-        args: --no-default-features --features "std u32_backend"
+    - run: cargo test --no-default-features --features "std u32_backend"
 
   test-u64:
     name: Test u64 backend
@@ -35,10 +32,7 @@ jobs:
         profile: minimal
         toolchain: stable
         override: true
-    - uses: actions-rs/cargo@v1
-      with:
-        command: test
-        args: --no-default-features --features "std u64_backend"
+    - run: cargo test --no-default-features --features "std u64_backend"
 
   nightly:
     name: Test nightly compiler
@@ -50,10 +44,7 @@ jobs:
         profile: minimal
         toolchain: nightly
         override: true
-    - uses: actions-rs/cargo@v1
-      with:
-        command: test
-        args: --features "nightly"
+    - run: cargo test --features "nightly"
 
   test-defaults-serde:
     name: Test default feature selection and serde
@@ -65,10 +56,7 @@ jobs:
         profile: minimal
         toolchain: stable
         override: true
-    - uses: actions-rs/cargo@v1
-      with:
-        command: test
-        args: --features "serde"
+    - run: cargo test --features "serde"
 
   msrv:
     name: Current MSRV is 1.51
@@ -80,9 +68,7 @@ jobs:
         profile: minimal
         toolchain: 1.51
         override: true
-    - uses: actions-rs/cargo@v1
-      with:
-        command: build
+    - run: cargo build
 
   bench:
     name: Check that benchmarks compile
@@ -94,8 +80,5 @@ jobs:
         profile: minimal
         toolchain: stable
         override: true
-    - uses: actions-rs/cargo@v1
-      with:
-        command: bench
         # This filter selects no benchmarks, so we don't run any, only build them.
-        args: "DONTRUNBENCHMARKS"
+    - run: cargo bench "DONTRUNBENCHMARKS"
