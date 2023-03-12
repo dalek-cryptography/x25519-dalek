@@ -63,8 +63,8 @@ impl PublicKey {
 /// This type is identical to the [`StaticSecret`] type, except that the
 /// [`EphemeralSecret::diffie_hellman`] method consumes and then wipes the secret key, and there
 /// are no serialization methods defined.  This means that [`EphemeralSecret`]s can only be
-/// generated from fresh randomness by [`EphemeralSecret::new`] and the compiler statically checks
-/// that the resulting secret is used at most once.
+/// generated from fresh randomness where the compiler statically checks that the resulting
+/// secret is used at most once.
 #[cfg_attr(feature = "zeroize", derive(Zeroize))]
 #[cfg_attr(feature = "zeroize", zeroize(drop))]
 pub struct EphemeralSecret(pub(crate) Scalar);
@@ -76,18 +76,18 @@ impl EphemeralSecret {
         SharedSecret(self.0 * their_public.0)
     }
 
-    /// Generate an x25519 [`EphemeralSecret`] key.
-    pub fn new<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
+    /// Generate an x25519 [`EphemeralSecret`] key with the supplied [`rand_core::OsRng`]
+    pub fn random_from_rng<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
         let mut bytes = [0u8; 32];
 
         csprng.fill_bytes(&mut bytes);
 
         EphemeralSecret(Scalar::from_bits_clamped(bytes))
     }
-    /// Generate an x25519 [`EphemeralSecret`] key using [`rand_core::OsRng`].
+    /// Generate an x25519 [`EphemeralSecret`]
     #[cfg(feature = "getrandom")]
     pub fn random() -> Self {
-        Self::new(&mut rand_core::OsRng)
+        Self::random_from_rng(&mut rand_core::OsRng)
     }
 }
 
@@ -130,18 +130,19 @@ impl ReusableSecret {
         SharedSecret(self.0 * their_public.0)
     }
 
-    /// Generate a non-serializeable x25519 [`ReusableSecret`] key.
-    pub fn new<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
+    /// Generate a non-serializeable x25519 [`ReusableSecret`] key
+    /// with the supplied [`rand_core::OsRng`].
+    pub fn random_from_rng<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
         let mut bytes = [0u8; 32];
 
         csprng.fill_bytes(&mut bytes);
 
         ReusableSecret(Scalar::from_bits_clamped(bytes))
     }
-    /// Generate a non-serializeable x25519 [`ReusableSecret`] key using [`rand_core::OsRng`].
+    /// Generate a non-serializeable x25519 [`ReusableSecret`].
     #[cfg(feature = "getrandom")]
     pub fn random() -> Self {
-        Self::new(&mut rand_core::OsRng)
+        Self::random_from_rng(&mut rand_core::OsRng)
     }
 }
 
@@ -182,8 +183,8 @@ impl StaticSecret {
         SharedSecret(self.0 * their_public.0)
     }
 
-    /// Generate an x25519 key.
-    pub fn new<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
+    /// Generate a new [`StaticSecret`] key with the supplied [`rand_core::OsRng`].
+    pub fn random_from_rng<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
         let mut bytes = [0u8; 32];
 
         csprng.fill_bytes(&mut bytes);
@@ -191,15 +192,15 @@ impl StaticSecret {
         StaticSecret(Scalar::from_bits_clamped(bytes))
     }
 
+    /// Generate a new [`StaticSecret`] key.
+    #[cfg(feature = "getrandom")]
+    pub fn random() -> Self {
+        Self::random_from_rng(&mut rand_core::OsRng)
+    }
+
     /// Extract this key's bytes for serialization.
     pub fn to_bytes(&self) -> [u8; 32] {
         self.0.to_bytes()
-    }
-
-    /// Generate an x25519 key key using [`rand_core::OsRng`].
-    #[cfg(feature = "getrandom")]
-    pub fn random() -> Self {
-        Self::new(&mut rand_core::OsRng)
     }
 }
 
@@ -292,11 +293,11 @@ impl SharedSecret {
 /// use x25519_dalek::PublicKey;
 ///
 /// // Generate Alice's key pair.
-/// let alice_secret = StaticSecret::new(&mut OsRng);
+/// let alice_secret = StaticSecret::random_from_rng(&mut OsRng);
 /// let alice_public = PublicKey::from(&alice_secret);
 ///
 /// // Generate Bob's key pair.
-/// let bob_secret = StaticSecret::new(&mut OsRng);
+/// let bob_secret = StaticSecret::random_from_rng(&mut OsRng);
 /// let bob_public = PublicKey::from(&bob_secret);
 ///
 /// // Alice and Bob should now exchange their public keys.

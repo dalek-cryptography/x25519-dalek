@@ -181,20 +181,24 @@ fn rfc7748_ladder_test2() {
     );
 }
 
-#[test]
 #[cfg(feature = "getrandom")]
-fn random_ephemeral_secret() {
-    EphemeralSecret::random();
-}
+mod getrandom {
 
-#[test]
-#[cfg(all(feature = "getrandom", feature = "reusable_secrets"))]
-fn random_reusable_secret() {
-    ReusableSecret::random();
-}
+    use super::*;
 
-#[test]
-#[cfg(feature = "getrandom")]
-fn random_static_secret() {
-    StaticSecret::random();
+    #[test]
+    fn random_ephemeral_secret() {
+        EphemeralSecret::random();
+    }
+
+    #[test]
+    #[cfg(feature = "reusable_secrets")]
+    fn random_reusable_secret() {
+        ReusableSecret::random();
+    }
+
+    #[test]
+    fn random_static_secret() {
+        StaticSecret::random();
+    }
 }
