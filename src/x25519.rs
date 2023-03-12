@@ -138,7 +138,7 @@ impl ReusableSecret {
 
         ReusableSecret(Scalar::from_bits_clamped(bytes))
     }
-    /// Generate a non-serializeable x25519 [`ReuseableSecret`] key using [`rand_core::OsRng`].
+    /// Generate a non-serializeable x25519 [`ReusableSecret`] key using [`rand_core::OsRng`].
     #[cfg(feature = "getrandom")]
     pub fn random() -> Self {
         Self::new(&mut rand_core::OsRng)
