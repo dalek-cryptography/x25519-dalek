@@ -84,6 +84,11 @@ impl EphemeralSecret {
 
         EphemeralSecret(Scalar::from_bits_clamped(bytes))
     }
+    /// Generate an x25519 [`EphemeralSecret`] key using [`rand_core::OsRng`].
+    #[cfg(feature = "getrandom")]
+    pub fn random() -> Self {
+        Self::new(&mut rand_core::OsRng)
+    }
 }
 
 impl<'a> From<&'a EphemeralSecret> for PublicKey {
@@ -132,6 +137,11 @@ impl ReusableSecret {
         csprng.fill_bytes(&mut bytes);
 
         ReusableSecret(Scalar::from_bits_clamped(bytes))
+    }
+    /// Generate a non-serializeable x25519 [`ReuseableSecret`] key using [`rand_core::OsRng`].
+    #[cfg(feature = "getrandom")]
+    pub fn random() -> Self {
+        Self::new(&mut rand_core::OsRng)
     }
 }
 
@@ -184,6 +194,12 @@ impl StaticSecret {
     /// Extract this key's bytes for serialization.
     pub fn to_bytes(&self) -> [u8; 32] {
         self.0.to_bytes()
+    }
+
+    /// Generate an x25519 key key using [`rand_core::OsRng`].
+    #[cfg(feature = "getrandom")]
+    pub fn random() -> Self {
+        Self::new(&mut rand_core::OsRng)
     }
 }
 
