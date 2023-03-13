@@ -77,6 +77,19 @@ impl EphemeralSecret {
     }
 
     /// Generate an x25519 [`EphemeralSecret`] key with the supplied [`rand_core::OsRng`]
+    #[deprecated(
+        since = "2.0.0",
+        note = "Renamed to `random_from_rng`. This will be removed in 2.1.0"
+    )]
+    pub fn new<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
+        let mut bytes = [0u8; 32];
+
+        csprng.fill_bytes(&mut bytes);
+
+        EphemeralSecret(Scalar::from_bits_clamped(bytes))
+    }
+
+    /// Generate an x25519 [`EphemeralSecret`] key with the supplied [`rand_core::OsRng`]
     pub fn random_from_rng<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
         let mut bytes = [0u8; 32];
 
@@ -84,6 +97,7 @@ impl EphemeralSecret {
 
         EphemeralSecret(Scalar::from_bits_clamped(bytes))
     }
+
     /// Generate an x25519 [`EphemeralSecret`]
     #[cfg(feature = "getrandom")]
     pub fn random() -> Self {
@@ -132,6 +146,20 @@ impl ReusableSecret {
 
     /// Generate a non-serializeable x25519 [`ReusableSecret`] key
     /// with the supplied [`rand_core::OsRng`].
+    #[deprecated(
+        since = "2.0.0",
+        note = "Renamed to `random_from_rng`. This will be removed in 2.1.0."
+    )]
+    pub fn new<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
+        let mut bytes = [0u8; 32];
+
+        csprng.fill_bytes(&mut bytes);
+
+        ReusableSecret(Scalar::from_bits_clamped(bytes))
+    }
+
+    /// Generate a non-serializeable x25519 [`ReusableSecret`] key
+    /// with the supplied [`rand_core::OsRng`].
     pub fn random_from_rng<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
         let mut bytes = [0u8; 32];
 
@@ -139,6 +167,7 @@ impl ReusableSecret {
 
         ReusableSecret(Scalar::from_bits_clamped(bytes))
     }
+
     /// Generate a non-serializeable x25519 [`ReusableSecret`].
     #[cfg(feature = "getrandom")]
     pub fn random() -> Self {
@@ -184,6 +213,19 @@ impl StaticSecret {
     }
 
     /// Generate a new [`StaticSecret`] key with the supplied [`rand_core::OsRng`].
+    #[deprecated(
+        since = "2.0.0",
+        note = "Renamed to `random_from_rng`. This will be removed in 2.1.0"
+    )]
+    pub fn new<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
+        let mut bytes = [0u8; 32];
+
+        csprng.fill_bytes(&mut bytes);
+
+        StaticSecret(Scalar::from_bits_clamped(bytes))
+    }
+
+    /// Generate a new [`StaticSecret`] key with the supplied [`rand_core::OsRng`].
     pub fn random_from_rng<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
         let mut bytes = [0u8; 32];
 
@@ -192,7 +234,7 @@ impl StaticSecret {
         StaticSecret(Scalar::from_bits_clamped(bytes))
     }
 
-    /// Generate a new [`StaticSecret`] key.
+    /// Generate a [`StaticSecret`] key.
     #[cfg(feature = "getrandom")]
     pub fn random() -> Self {
         Self::random_from_rng(&mut rand_core::OsRng)
