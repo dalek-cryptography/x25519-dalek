@@ -76,7 +76,7 @@ impl EphemeralSecret {
         SharedSecret(self.0 * their_public.0)
     }
 
-    /// Generate an x25519 [`EphemeralSecret`] key with the supplied [`rand_core::OsRng`]
+    /// Generate a new [`EphemeralSecret`] with the supplied RNG.
     #[deprecated(
         since = "2.0.0",
         note = "Renamed to `random_from_rng`. This will be removed in 2.1.0"
@@ -89,7 +89,7 @@ impl EphemeralSecret {
         EphemeralSecret(Scalar::from_bits_clamped(bytes))
     }
 
-    /// Generate an x25519 [`EphemeralSecret`] key with the supplied [`rand_core::OsRng`]
+    /// Generate a new [`EphemeralSecret`] with the supplied RNG.
     pub fn random_from_rng<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
         let mut bytes = [0u8; 32];
 
@@ -98,7 +98,7 @@ impl EphemeralSecret {
         EphemeralSecret(Scalar::from_bits_clamped(bytes))
     }
 
-    /// Generate an x25519 [`EphemeralSecret`]
+    /// Generate a new [`EphemeralSecret`].
     #[cfg(feature = "getrandom")]
     pub fn random() -> Self {
         Self::random_from_rng(&mut rand_core::OsRng)
@@ -144,8 +144,7 @@ impl ReusableSecret {
         SharedSecret(self.0 * their_public.0)
     }
 
-    /// Generate a non-serializeable x25519 [`ReusableSecret`] key
-    /// with the supplied [`rand_core::OsRng`].
+    /// Generate a new [`ReusableSecret`] with the supplied RNG.
     #[deprecated(
         since = "2.0.0",
         note = "Renamed to `random_from_rng`. This will be removed in 2.1.0."
@@ -158,8 +157,7 @@ impl ReusableSecret {
         ReusableSecret(Scalar::from_bits_clamped(bytes))
     }
 
-    /// Generate a non-serializeable x25519 [`ReusableSecret`] key
-    /// with the supplied [`rand_core::OsRng`].
+    /// Generate a new [`ReusableSecret`] with the supplied RNG.
     pub fn random_from_rng<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
         let mut bytes = [0u8; 32];
 
@@ -168,7 +166,7 @@ impl ReusableSecret {
         ReusableSecret(Scalar::from_bits_clamped(bytes))
     }
 
-    /// Generate a non-serializeable x25519 [`ReusableSecret`].
+    /// Generate a new [`ReusableSecret`].
     #[cfg(feature = "getrandom")]
     pub fn random() -> Self {
         Self::random_from_rng(&mut rand_core::OsRng)
@@ -212,7 +210,7 @@ impl StaticSecret {
         SharedSecret(self.0 * their_public.0)
     }
 
-    /// Generate a new [`StaticSecret`] key with the supplied [`rand_core::OsRng`].
+    /// Generate a new [`StaticSecret`] with the supplied RNG.
     #[deprecated(
         since = "2.0.0",
         note = "Renamed to `random_from_rng`. This will be removed in 2.1.0"
@@ -225,7 +223,7 @@ impl StaticSecret {
         StaticSecret(Scalar::from_bits_clamped(bytes))
     }
 
-    /// Generate a new [`StaticSecret`] key with the supplied [`rand_core::OsRng`].
+    /// Generate a new [`StaticSecret`] with the supplied RNG.
     pub fn random_from_rng<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
         let mut bytes = [0u8; 32];
 
@@ -234,7 +232,7 @@ impl StaticSecret {
         StaticSecret(Scalar::from_bits_clamped(bytes))
     }
 
-    /// Generate a [`StaticSecret`] key.
+    /// Generate a new [`StaticSecret`].
     #[cfg(feature = "getrandom")]
     pub fn random() -> Self {
         Self::random_from_rng(&mut rand_core::OsRng)
