@@ -82,11 +82,7 @@ impl EphemeralSecret {
         note = "Renamed to `random_from_rng`. This will be removed in 2.1.0"
     )]
     pub fn new<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
-        let mut bytes = [0u8; 32];
-
-        csprng.fill_bytes(&mut bytes);
-
-        EphemeralSecret(Scalar::from_bits_clamped(bytes))
+        Self::random_from_rng(&mut csprng)
     }
 
     /// Generate a new [`EphemeralSecret`] with the supplied RNG.
@@ -150,11 +146,7 @@ impl ReusableSecret {
         note = "Renamed to `random_from_rng`. This will be removed in 2.1.0."
     )]
     pub fn new<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
-        let mut bytes = [0u8; 32];
-
-        csprng.fill_bytes(&mut bytes);
-
-        ReusableSecret(Scalar::from_bits_clamped(bytes))
+        Self::random_from_rng(&mut csprng)
     }
 
     /// Generate a new [`ReusableSecret`] with the supplied RNG.
@@ -216,11 +208,7 @@ impl StaticSecret {
         note = "Renamed to `random_from_rng`. This will be removed in 2.1.0"
     )]
     pub fn new<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
-        let mut bytes = [0u8; 32];
-
-        csprng.fill_bytes(&mut bytes);
-
-        StaticSecret(Scalar::from_bits_clamped(bytes))
+        Self::random_from_rng(&mut csprng)
     }
 
     /// Generate a new [`StaticSecret`] with the supplied RNG.
