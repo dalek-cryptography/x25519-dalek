@@ -38,7 +38,7 @@ rustdoc-args = [
 features = ["reusable_secrets", "serde"]
 
 [dependencies]
-curve25519-dalek = { version = "4.0.0-rc.0", default-features = false }
+curve25519-dalek = { git = "https://github.com/rozbb/curve25519-dalek.git", branch = "scalar-always-reduced", default-features = false }
 rand_core = { version = "0.6", default-features = false }
 serde = { version = "1", default-features = false, optional = true, features = ["derive"] }
 zeroize = { version = "1", default-features = false, optional = true, features = ["zeroize_derive"] }

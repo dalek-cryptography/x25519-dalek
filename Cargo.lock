@@ -166,8 +166,7 @@ dependencies = [
 [[package]]
 name = "curve25519-dalek"
 version = "4.0.0-rc.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8d4ba9852b42210c7538b75484f9daa0655e9a3ac04f693747bb0f02cf3cfe16"
+source = "git+https://github.com/rozbb/curve25519-dalek.git?branch=scalar-always-reduced#5d1aae2b391d38c3a3abd7776edbe6499cc1dc8d"
 dependencies = [
  "cfg-if",
  "fiat-crypto",
