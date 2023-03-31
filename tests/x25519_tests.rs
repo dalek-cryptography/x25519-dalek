@@ -201,6 +201,7 @@ mod rand_core {
     }
 
     #[test]
+    #[cfg(feature = "static_secrets")]
     fn static_from_rng() {
         #[allow(deprecated)]
         StaticSecret::new(OsRng);
@@ -225,6 +226,7 @@ mod getrandom {
     }
 
     #[test]
+    #[cfg(feature = "static_secrets")]
     fn static_random() {
         StaticSecret::random();
     }
