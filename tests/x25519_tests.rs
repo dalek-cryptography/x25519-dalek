@@ -60,11 +60,9 @@ fn serde_bincode_static_secret_roundtrip() {
 #[cfg(feature = "serde")]
 fn serde_bincode_static_secret_matches_from_bytes() {
     use bincode;
-    use curve25519_dalek::scalar::clamp_integer;
 
     let expected = StaticSecret::from([0x24; 32]);
-    let clamped_bytes = clamp_integer([0x24; 32]);
-    let decoded: StaticSecret = bincode::deserialize(&clamped_bytes).unwrap();
+    let decoded: StaticSecret = bincode::deserialize(&[0x24; 32]).unwrap();
 
     assert_eq!(decoded.to_bytes(), expected.to_bytes());
 }
