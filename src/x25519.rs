@@ -14,9 +14,7 @@
 //! This implements x25519 key exchange as specified by Mike Hamburg
 //! and Adam Langley in [RFC7748](https://tools.ietf.org/html/rfc7748).
 
-use curve25519_dalek::{
-    edwards::EdwardsPoint, montgomery::MontgomeryPoint, scalar::clamp_integer, traits::IsIdentity,
-};
+use curve25519_dalek::{edwards::EdwardsPoint, montgomery::MontgomeryPoint, traits::IsIdentity};
 
 use rand_core::CryptoRng;
 use rand_core::RngCore;
@@ -94,10 +92,10 @@ impl EphemeralSecret {
 
     /// Generate a new [`EphemeralSecret`] with the supplied RNG.
     pub fn random_from_rng<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
-        // Generate random bytes. The secret key is the clamping of this.
+        // The secret key is random bytes. Clamping is done later.
         let mut bytes = [0u8; 32];
         csprng.fill_bytes(&mut bytes);
-        EphemeralSecret(clamp_integer(bytes))
+        EphemeralSecret(bytes)
     }
 
     /// Generate a new [`EphemeralSecret`].
@@ -157,10 +155,10 @@ impl ReusableSecret {
 
     /// Generate a new [`ReusableSecret`] with the supplied RNG.
     pub fn random_from_rng<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
-        // Generate random bytes. The secret key is the clamping of this.
+        // The secret key is random bytes. Clamping is done later.
         let mut bytes = [0u8; 32];
         csprng.fill_bytes(&mut bytes);
-        ReusableSecret(clamp_integer(bytes))
+        ReusableSecret(bytes)
     }
 
     /// Generate a new [`ReusableSecret`].
@@ -218,10 +216,10 @@ impl StaticSecret {
 
     /// Generate a new [`StaticSecret`] with the supplied RNG.
     pub fn random_from_rng<T: RngCore + CryptoRng>(mut csprng: T) -> Self {
-        // Generate random bytes. The secret key is the clamping of this.
+        // The secret key is random bytes. Clamping is done later.
         let mut bytes = [0u8; 32];
         csprng.fill_bytes(&mut bytes);
-        StaticSecret(clamp_integer(bytes))
+        StaticSecret(bytes)
     }
 
     /// Generate a new [`StaticSecret`].
@@ -247,7 +245,7 @@ impl StaticSecret {
 impl From<[u8; 32]> for StaticSecret {
     /// Load a secret key from a byte array.
     fn from(bytes: [u8; 32]) -> StaticSecret {
-        StaticSecret(clamp_integer(bytes))
+        StaticSecret(bytes)
     }
 }
 
