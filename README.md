@@ -1,3 +1,11 @@
+# ARCHIVED
+
+This repo has been [moved](https://github.com/dalek-cryptography/curve25519-dalek). Please direct all issues and pull requests to the new repo.
+
+This repo will remain here in a read-only state for historical purposes.
+
+---
+
 # x25519-dalek  [![](https://img.shields.io/crates/v/x25519-dalek.svg)](https://crates.io/crates/x25519-dalek) [![](https://docs.rs/x25519-dalek/badge.svg)](https://docs.rs/x25519-dalek) [![](https://travis-ci.org/dalek-cryptography/x25519-dalek.svg?branch=master)](https://travis-ci.org/dalek-cryptography/x25519-dalek)
 
 A pure-Rust implementation of x25519 elliptic curve Diffie-Hellman key exchange,
