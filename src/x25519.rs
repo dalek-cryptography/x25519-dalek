@@ -103,6 +103,20 @@ impl EphemeralSecret {
     pub fn random() -> Self {
         Self::random_from_rng(&mut rand_core::OsRng)
     }
+
+    /// View this key as a byte array.
+    #[inline]
+    pub fn as_bytes(&self) -> &[u8; 32] {
+        &self.0
+    }
+}
+
+impl AsRef<[u8]> for EphemeralSecret {
+    /// View this private key as a byte array.
+    #[inline]
+    fn as_ref(&self) -> &[u8] {
+        self.as_bytes()
+    }
 }
 
 impl<'a> From<&'a EphemeralSecret> for PublicKey {
